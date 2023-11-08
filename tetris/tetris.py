@@ -1,25 +1,20 @@
-from consts import Display
-from game import Game
+from consts import Movements
 import pygame
-import sys
+from piece import Piece
 
-if __name__ == "__main__":
-    pygame.init()
-    screen = pygame.display.set_mode((Display.width.value, Display.height.value))
-    game = Game(screen)
-    clock = pygame.time.Clock()
-    running = True
 
-    while (running):
-        clock.tick(60)
-        screen.fill("black")
+class Tetris(pygame.sprite.Sprite):
+    def __init__(self, font, screen):
+        super().__init__()
+        self.switch = None
+        self.shape = Piece.generate_piece(screen)
+        self.image = pygame.display.get_surface().copy()
+        self.image.fill((0, 0, 0))
+        font.render_to(self.image, (10, 30), 'Score: 0', fgcolor=pygame.Color('orange'))
+        self.rect = self.image.get_rect()
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-
-        game.init()
-        pygame.display.flip()
-
-    pygame.quit()
-    sys.exit()
+    def update(self, events, dt):
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE and self.switch:
+                    self.switch()
